@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Upload</title>
+    <!-- Bootswatch Material Theme CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootswatch@4.5.2/dist/materia/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <h1>Files</h1>
+    <!-- File Upload Form -->
+    <form action="/upload" method="POST" enctype="multipart/form-data" class="mb-3">
+        <div class="mb-3">
+            <label for="file" class="form-label">Select file</label>
+            <input class="form-control" type="file" id="file" name="file">
+        </div>
+        <button type="submit" class="btn btn-primary">Upload</button>
+    </form>
+    
+    <!-- Files Table -->
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Filename</th>
+                <th scope="col">Size</th>
+                <th scope="col">Type</th>
+                <th scope="col">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% files.forEach(file => { %>
+                <tr>
+                    <td><%= file.filename %></td>
+                    <td><%= file.length %> bytes</td>
+                    <td><%= file.metadata.mimeType %></td>
+                    <td>
+                        <a href="/files/<%= file._id %>" class="btn btn-sm btn-success">View</a>
+                        <a href="/files/delete/<%= file._id %>" class="btn btn-sm btn-danger">Delete</a>
+                    </td>
+                </tr>
+            <% }) %>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>
