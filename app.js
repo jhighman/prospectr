@@ -20,11 +20,6 @@ let fileController;
 
 
 app.post('/upload', (req, res) => fileController.uploadFile(req, res));
-app.get('/delete/:id', (req, res) => fileController.deleteFile(req, res));
-app.get('/files/:filename', (req, res) => fileController.viewFile(req, res));
-
-
-
 
 
 // Define the route. Actual handling will defer to the controller which will be initialized later.
@@ -44,6 +39,22 @@ app.get("/", async (req, res) => {
     res.status(500).send("Server error while accessing files");
   }
 });
+
+app.get('/file-detail', async (req, res) => {
+  await fileController.fetchFileDetailsAndRender(req, res);
+});
+
+
+// Adjust route for viewing file details to use filename
+app.get('/files/:filename', (req, res) => {
+  res.redirect(`/file-detail?action=view&filename=${encodeURIComponent(req.params.filename)}`);
+});
+
+// Adjust route for the delete confirmation page to use filename
+app.get('/files/delete/:filename', (req, res) => {
+  res.redirect(`/file-detail?action=delete&filename=${encodeURIComponent(req.params.filename)}`);
+});
+
 
 
 async function startServer() {

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Detail</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootswatch@4.5.2/dist/materia/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <% if (action === 'view') { %>
+        <h1>View File</h1>
+        <!-- Display file details -->
+        <p>Filename: <%= file.filename %></p>
+        <p>Size: <%= file.length %> bytes</p>
+        <p>Type: <%= file.metadata.mimeType %></p>
+        <p>Upload Date: <%= file.uploadDate %></p>
+        <!-- Add more fields as needed -->
+    <% } else if (action === 'delete') { %>
+        <h1>Delete File</h1>
+        <p>Are you sure you want to delete <%= file.filename %>? This action cannot be undone.</p>
+        <form action="/files/delete/<%= encodeURIComponent(file.filename) %>" method="POST">
+            <button type="submit" class="btn btn-danger">Delete</button>
+            <a href="/" class="btn btn-secondary">Cancel</a>
+        </form>
+    <% } %>
+</div>
+</body>
+</html>

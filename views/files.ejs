@@ -36,8 +36,8 @@
                     <td><%= file.length %> bytes</td>
                     <td><%= file.metadata.mimeType %></td>
                     <td>
-                        <a href="/files/<%= file._id %>" class="btn btn-sm btn-success">View</a>
-                        <a href="/files/delete/<%= file._id %>" class="btn btn-sm btn-danger">Delete</a>
+                        <a href="/files/<%= encodeURIComponent(file.filename) %>" class="btn btn-sm btn-success">View</a>
+                        <a href="/files/delete/<%= encodeURIComponent(file.filename) %>" class="btn btn-sm btn-danger">Delete</a>
                     </td>
                 </tr>
             <% }) %>

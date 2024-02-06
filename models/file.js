@@ -27,6 +27,27 @@ function createFileModel(gfs) {
         throw err;
       }
     },
+    
+    removeByFilename: async function(filename) {
+      try {
+        const file = await this.findOneByFilename(filename);
+        if (!file) {
+          throw new Error("File not found");
+        }
+        const objectId = new mongoose.Types.ObjectId(file._id); // Assuming file._id is the ObjectId
+        return new Promise((resolve, reject) => {
+          gfs.delete(objectId, (err) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve({ message: "File deleted successfully." });
+            }
+          });
+        });
+      } catch (err) {
+        throw err;
+      }
+    },
 
     removeById: async function(id) {
       try {
@@ -46,6 +67,8 @@ function createFileModel(gfs) {
       }
     }
   };
+
+  
 }
 
 module.exports = createFileModel;

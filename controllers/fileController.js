@@ -72,14 +72,42 @@ class FileController {
 
   async deleteFile(req, res) {
     try {
-      const fileId = req.params.id; // Assuming the file ID is passed as a URL parameter
-      await this.fileModel.removeById(fileId);
+      const filename = req.params.filename; // Adjust this line to use the filename parameter
+      await this.fileModel.removeByFilename(filename);
       res.redirect('/'); // Redirect back to the files list, or send a success response
     } catch (error) {
       console.error('Error deleting file:', error);
       res.status(500).send("Server error while deleting file.");
     }
   }
+
+  async fetchFileDetailsAndRender(req, res) {
+    try {
+      const { action, filename } = req.query; // Use query parameters for action and filename
+      const file = await this.fileModel.findOneByFilename(decodeURIComponent(filename)); // Use decodeURIComponent to ensure filename is correctly interpreted
+
+      if (!file) {
+        return res.status(404).send("File not found.");
+      }
+
+      // Decide what to render based on the action
+      switch (action) {
+        case 'view':
+          res.render('file-detail', { action: 'view', file });
+          break;
+        case 'delete':
+          // For delete, just pass the filename to the form action URL
+          res.render('file-detail', { action: 'delete', file: { ...file, fileId: encodeURIComponent(file.filename) } });
+          break;
+        default:
+          res.status(400).send("Invalid action.");
+      }
+    } catch (error) {
+      console.error('Error fetching file details:', error);
+      res.status(500).send("Server error while accessing file details.");
+    }
+  }
+
 
   async viewFile(req, res) {
     try {
