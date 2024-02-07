@@ -1,38 +1,48 @@
 require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
+const mainController = require('./controllers/mainController');
+// Import configureFileRoutes as a function, not as a router directly
+const configureFileRoutes = require('./routes/fileRoutes'); // This now exports a function
+const configureFileActionRoutes = require('./routes/fileActionRoutes'); // Import the new function
+
+const jobsRoutes = require('./routes/jobsRoutes');
 const { initializeDbConnection } = require('./config/db');
-const createFileModel = require('./models/file');
-const FileController = require('./controllers/fileController');
-const fileRoutes = require('./routes/fileRoutes');
+const { connectDb } = require('./config/db')
+
+
 const app = express();
 
 app.use(bodyParser.json());
 app.set('view engine', 'ejs');
 
-let fileController; // Placeholder for the file controller
+// Define a route for the main page
+app.get('/', mainController.renderMainPage);
 
-// Define the middleware to ensure fileController is initialized
-function ensureFileControllerInitialized(req, res, next) {
-    if (!fileController) {
-        return res.status(503).send("Service unavailable. The file controller is not initialized.");
-    }
-    req.fileController = fileController; // Make fileController available in the request object
-    next();
-}
-
-// Use the middleware globally or before specific routes that require the fileController
-app.use(ensureFileControllerInitialized);
-
-// Then, set up your routes
-app.use('/', fileRoutes);
+app.get('/test', (req, res) => {
+    res.send('Test route is working');
+});
 
 async function startServer() {
     try {
-        const { gfs } = await initializeDbConnection();
-        const fileModel = createFileModel(gfs);
-        fileController = new FileController(fileModel); // Initialize fileController after DB connection
 
+        await connectDb();
+        // Initialize DB connection before setting up routes
+        const { gfs } = await initializeDbConnection();
+        
+        console.log('second connection for gfs initialized instance.');
+
+        // Call configureFileRoutes with gfs to get the configured router
+        const fileRouter = configureFileRoutes(gfs);
+        app.use('/files', fileRouter); // Use the configured file routes
+        const fileActionRouter = configureFileActionRoutes(gfs); // Initialize with gfs
+        
+        // In your file routes configuration or directly in app.js
+        //app.use('/file-actions', fileActionRouter); // Use the new router with its base path
+        // Setup other routes
+        app.use('/jobs', jobsRoutes); // Use jobs routes
+
+        // Start listening for requests after everything is initialized
         const port = process.env.PORT || 3000;
         app.listen(port, () => console.log(`Server running on port ${port}`));
     } catch (error) {

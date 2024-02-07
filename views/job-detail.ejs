@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Job Detail</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootswatch@4.5.2/dist/materia/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <h1>Job Detail: <%= job.name %></h1>
+    <p>Identifier: <%= job.identifier %></p>
+    <p>Start Time: <%= new Date(job.startTime).toLocaleString() %></p>
+    <p>Finish Time: <%= job.finishTime ? new Date(job.finishTime).toLocaleString() : 'N/A' %></p>
+    <p>Exit Status: <%= job.exitStatus %></p>
+    <!-- Add more job details as needed -->
+    <a href="/jobs" class="btn btn-secondary mt-3">Back to Jobs List</a>
+</div>
+</body>
+</html>

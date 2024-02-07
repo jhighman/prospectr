@@ -1,74 +1,96 @@
-const mongoose = require('mongoose'); // Required for ObjectId conversion in removeById
+const mongoose = require('mongoose');
 
-function createFileModel(gfs) {
-  return {
-
-    listFiles: async function() {
-      try {
-        const files = await gfs.find().toArray();
-        // Assuming you want to include MIME type in the file listing
-        const filesWithMime = files.map(file => {
-          return {
-            ...file,
-            mimeType: file.metadata ? file.metadata.mimeType : 'Unknown'
-          };
-        });
-        return filesWithMime;
-      } catch (err) {
-        throw err;
-      }
-    },
-
-    findOneByFilename: async function(filename) {
-      try {
-        const result = await gfs.find({ filename: filename }).toArray();
-        return result[0] || null; // Return the first file matching the filename or null if not found
-      } catch (err) {
-        throw err;
-      }
-    },
-    
-    removeByFilename: async function(filename) {
-      try {
-        const file = await this.findOneByFilename(filename);
-        if (!file) {
-          throw new Error("File not found");
-        }
-        const objectId = new mongoose.Types.ObjectId(file._id); // Assuming file._id is the ObjectId
-        return new Promise((resolve, reject) => {
-          gfs.delete(objectId, (err) => {
-            if (err) {
-              reject(err);
-            } else {
-              resolve({ message: "File deleted successfully." });
-            }
-          });
-        });
-      } catch (err) {
-        throw err;
-      }
-    },
-
-    removeById: async function(id) {
-      try {
-        // Ensure the id is a valid ObjectId
-        const objectId = new mongoose.Types.ObjectId(id);
-        return new Promise((resolve, reject) => {
-          gfs.delete(objectId, (err) => {
-            if (err) {
-              reject(err);
-            } else {
-              resolve({ message: "File deleted successfully." });
-            }
-          });
-        });
-      } catch (err) {
-        throw err;
-      }
+class FileModel {
+  constructor(gfs) {
+    if (!gfs) {
+      throw new Error("FileModel cannot be instantiated without a gfs instance.");
     }
-  };
+    
+    if (FileModel.instance) {
+      return FileModel.instance;
+    }
 
-  
+    this.gfs = gfs;
+    FileModel.instance = this;
+  }
+
+// Assuming this is part of an Express route handler method in your controller
+// In your FileModel
+async listFiles() {
+  if (!this.gfs) {
+    throw new Error('gfs is not initialized.');
+  }
+
+  try {
+    const files = await this.gfs.find().toArray();
+    if (!files || files.length === 0) {
+      return [];
+    }
+
+    const processedFiles = files.map(file => ({
+      ...file,
+      mimeType: file.metadata && file.metadata.mimeType ? file.metadata.mimeType : 'Unknown',
+    })).sort((a, b) => new Date(b.uploadDate).getTime() - new Date(a.uploadDate).getTime());
+
+    return processedFiles;
+  } catch (err) {
+    console.error('Error retrieving files:', err);
+    throw err; // Let the controller handle the error
+  }
 }
 
-module.exports = createFileModel;
+
+  async findOneByFilename(filename) {
+    try {
+      const result = await this.gfs.find({ filename: filename }).toArray();
+      return result[0] || null;
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  async removeByFilename(filename) {
+    try {
+      const file = await this.findOneByFilename(filename);
+      if (!file) {
+        throw new Error("File not found");
+      }
+      const objectId = new mongoose.Types.ObjectId(file._id);
+      return new Promise((resolve, reject) => {
+        this.gfs.delete(objectId, (err) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve({ message: "File deleted successfully." });
+          }
+        });
+      });
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  async removeById(id) {
+    try {
+      const objectId = new mongoose.Types.ObjectId(id);
+      return new Promise((resolve, reject) => {
+        this.gfs.delete(objectId, (err) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve({ message: "File deleted successfully." });
+          }
+        });
+      });
+    } catch (err) {
+      throw err;
+    }
+  }
+}
+
+// Wrapper function to manage the Singleton instance
+function getFileModel(gfs) {
+  return new FileModel(gfs);
+}
+
+module.exports = getFileModel;

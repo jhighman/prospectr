@@ -11,7 +11,7 @@
 <div class="container mt-5">
     <h1>Files</h1>
     <!-- File Upload Form -->
-    <form action="/upload" method="POST" enctype="multipart/form-data" class="mb-3">
+    <form action="/files/upload" method="POST" enctype="multipart/form-data" class="mb-3">
         <div class="mb-3">
             <label for="file" class="form-label">Select file</label>
             <input class="form-control" type="file" id="file" name="file">
@@ -36,8 +36,9 @@
                     <td><%= file.length %> bytes</td>
                     <td><%= file.metadata.mimeType %></td>
                     <td>
-                        <a href="/files/<%= encodeURIComponent(file.filename) %>" class="btn btn-sm btn-success">View</a>
-                        <a href="/files/delete/<%= encodeURIComponent(file.filename) %>" class="btn btn-sm btn-danger">Delete</a>
+                        <a href="/files/file-detail?action=view&filename=<%= encodeURIComponent(file.filename) %>" class="btn btn-sm btn-success">View</a>
+                        <!-- Assuming delete should also be a GET request for simplicity, though POST is recommended for deletions -->
+                        <a href="/files/file-detail?action=delete&filename=<%= encodeURIComponent(file.filename) %>" class="btn btn-sm btn-danger">Delete</a>
                     </td>
                 </tr>
             <% }) %>
