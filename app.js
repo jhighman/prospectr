@@ -7,6 +7,7 @@ const configureFileRoutes = require('./routes/fileRoutes'); // This now exports 
 const configureFileActionRoutes = require('./routes/fileActionRoutes'); // Import the new function
 
 const jobsRoutes = require('./routes/jobsRoutes');
+const workItemRoutes  = require("./routes/workItemRoutes");
 const { initializeDbConnection } = require('./config/db');
 const { connectDb } = require('./config/db')
 
@@ -41,7 +42,7 @@ async function startServer() {
         //app.use('/file-actions', fileActionRouter); // Use the new router with its base path
         // Setup other routes
         app.use('/jobs', jobsRoutes); // Use jobs routes
-
+        app.use('/workitems', workItemRoutes); 
         // Start listening for requests after everything is initialized
         const port = process.env.PORT || 3000;
         app.listen(port, () => console.log(`Server running on port ${port}`));

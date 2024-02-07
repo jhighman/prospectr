@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Work Items List</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootswatch@4.5.2/dist/materia/bootstrap.min.css" rel="stylesheet">
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- Bootstrap JS (include Popper.js for dropdowns, needed for collapse) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+<div class="container mt-5">
+    <h1>Work Items List</h1>
+
+    <!-- Button trigger for collapsible form -->
+    <button class="btn btn-primary mb-3" type="button" data-toggle="collapse" data-target="#addWorkItemForm" aria-expanded="false" aria-controls="addWorkItemForm">
+        Add New Work Item
+    </button>
+
+    <!-- Collapsible Form -->
+    <div class="collapse mb-5" id="addWorkItemForm">
+        <div class="card card-body">
+            <form action="/workitems/add" method="POST">
+                <div class="mb-3">
+                    <label for="status" class="form-label">Status</label>
+                    <input type="text" class="form-control" id="status" name="status" placeholder="Enter status" required>
+                </div>
+                <div class="mb-3">
+                    <label for="referenceType" class="form-label">Reference Type</label>
+                    <input type="text" class="form-control" id="referenceType" name="referenceType" placeholder="Enter reference type" required>
+                </div>
+                <!-- Add additional fields as needed -->
+                <button type="submit" class="btn btn-success">Submit</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Work Items List Table -->
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th scope="col">Workflow ID</th>
+                <th scope="col">Status</th>
+                <th scope="col">Reference Type</th>
+                <th scope="col">Is Started</th>
+                <th scope="col">Is Completed</th>
+                <th scope="col">Dates</th>
+                <th scope="col">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% workItems.forEach(workItem => { %>
+                <tr>
+                    <td><%= workItem.workflowId %></td>
+                    <td><%= workItem.status %></td>
+                    <td><%= workItem.referenceType %></td>
+                    <td><%= workItem.isStarted ? 'Yes' : 'No' %></td>
+                    <td><%= workItem.isCompleted ? 'Yes' : 'No' %></td>
+                    <td>
+                        Started: <%= workItem.dates.startedDate ? new Date(workItem.dates.startedDate).toLocaleDateString() : 'N/A' %><br>
+                        Completed: <%= workItem.dates.completedDate ? new Date(workItem.dates.completedDate).toLocaleDateString() : 'N/A' %>
+                    </td>
+                    <td>
+                        <a href="/workitems/<%= workItem.workflowId %>" class="btn btn-info btn-sm">View</a>
+                        <a href="/workitems/edit/<%= workItem.workflowId %>" class="btn btn-primary btn-sm">Edit</a>
+                        <a href="/workitems/delete/<%= workItem.workflowId %>" class="btn btn-danger btn-sm">Delete</a>
+                    </td>
+                </tr>
+            <% }); %>
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>

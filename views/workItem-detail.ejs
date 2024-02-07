@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Work Item Detail</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+</head>
+<body>
+<div class="container mt-5">
+    <h1>Work Item Detail</h1>
+    <form id="workItemForm" action="/workitems/edit/<%= workItem.workflowId %>" method="PUT">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Workflow ID: <%= workItem.workflowId %></h5>
+                <!-- Editable fields hidden by default -->
+                <div class="edit-field" style="display: none;">
+                    <label>Status:</label>
+                    <input type="text" name="status" class="form-control" value="<%= workItem.status %>">
+                    <!-- Repeat for other fields -->
+                </div>
+                <!-- Display fields shown by default -->
+                <p class="display-field">Status: <%= workItem.status %></p>
+                <!-- Repeat for other fields -->
+                
+                <!-- Toggle Edit/Save button -->
+                <button type="button" id="editBtn" class="btn btn-primary">Edit</button>
+                <button type="submit" id="saveBtn" class="btn btn-success" style="display: none;">Save</button>
+                <a href="/workitems" class="btn btn-secondary">Back to List</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+$(document).ready(function() {
+    $("#editBtn").click(function() {
+        $(".edit-field").show();
+        $(".display-field").hide();
+        $("#editBtn").hide();
+        $("#saveBtn").show();
+    });
+    
+    $("#saveBtn").click(function() {
+        // Implement save functionality or let the form submission handle it
+    });
+
+    // Optionally, add a jQuery/AJAX call here to handle form submission without reloading the page
+});
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</body>
+</html>
+ç
